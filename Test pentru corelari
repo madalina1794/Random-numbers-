@@ -1,0 +1,21 @@
+import unittest
+i= None
+noOfSame=0
+class MyTest(unittest.TestCase, randomNum):
+
+    def test(self):
+    #verifie si il y a un positions dans le chain des bits genere par qrns qui coincide avec la meme position generee par random.org
+		for i in range(0, len(self)):
+        self.assertEqual(self[i],randomNum[i])
+        i++
+        
+    def test2(self) :
+    #verifie si il y des sequances(plus d'une position) qui coincident 
+		for i in range(0, len(self)):
+			if (self[i]==randomNum[i] )
+				noOfSame+=1
+				i++
+		self.assertEqual(noOfSame,2)
+       
+if __name__ == '__main__':
+    unittest.main()
