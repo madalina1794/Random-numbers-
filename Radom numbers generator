@@ -1,0 +1,89 @@
+import random
+import urllib
+import urllib2
+import threading    
+
+def _fetch_randomorg(service, user_agent, **kwargs):
+    """Internal function to make a fetch in a random.org service.
+    >>> _fetch_randomorg('numbers', num=3, min=10, max=20)
+    ['15', '11', '18']
+    """
+    url = "http://random.org/%s/?%s"
+    options = dict(format='plain', num=1, col=1, min=0, base=10) # default options
+    options.update(kwargs)
+    url = url % (service, urllib.urlencode(options))
+    headers = {
+        'User-Agent': '%s/RandomDotOrgPyV%s + %s' % (
+            user_agent, __version__, __url__)
+    }
+    req = urllib2.Request(url, headers=headers)
+    with _LOCK:
+        result = urllib2.urlopen(req).read()
+    return result.splitlines()
+    
+class RandomDotOrg(random.Random):
+	 def __init__(self, user_agent=None):
+        """
+        You now have to pass the user agent as parameter, 
+        Pass the name of your application and your email address.
+        """
+        if not user_agent:
+            raise TypeError('You *must* initialize Random.Org class with a '
+                'string to be used as User Agent on the requests. Please pass '
+                "your application's name and your email address, so that "
+                'random.org can contact you if needed')
+        self._user_agent = str(user_agent)
+
+    #--- New methods
+    
+     def write_random_bytes(self, fileobj, num_bytes=256):
+        """Writes the specified number of bytes to the file object passed.
+        Use it to feed /dev/random:
+        >>> r = randomdotorg.RandomDotOrg()
+        >>> r.write_random_bytes(open('/dev/random', 'a'))
+        """
+        for num in self.randrange(256, amount=num_bytes):
+            fileobj.write(chr(num))
+            
+            
+	def getrandbits(self, k):
+        """getrandbits(k) -> x.  Generates a long int with k random bits."""
+		k = int(k)
+        if k <= 0:
+            raise ValueError('number of bits must be greater than zero')
+        bits = _fetch_randomorg('binary', self._user_agent, num=k, max=1, 
+            base=2)
+        return long(''.join(bits), 2)
+      
+class ANURandom:
+    BINARY = "BINARY"
+    HEX = "HEX"
+    CHAR = "CHAR"
+
+    def getRandom(self,type):
+        if type == self.BINARY:
+            url = 'http://150.203.48.55/RawBin.php'
+        elif type == self.HEX:
+            url = 'http://150.203.48.55/RawHex.php'
+        elif type == self.CHAR:
+            url = 'http://150.203.48.55/RawChar.php'
+
+        page = urllib2.urlopen(url, timeout=5)
+
+        data = page.read()
+        num = data.split('"rng"')[1].split('<td>\n')[1].split('</td>')[0]
+        return num
+
+    def getBin(self):
+        return self.getRandom(self.BINARY)
+
+  
+      
+ if __name__ == '__main__':
+  number = ANURandom()
+  number.getBin
+  print(number)
+  r = randomdotorg.RandomDotOrg()
+  r.write_random_bytes(open('/dev/random', len(number)/8)
+  r.write_random_bits(len(number)) # "number" e sirul de binary generat de celalalt site
+  print r.getrandbits(len(number))
